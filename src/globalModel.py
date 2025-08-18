@@ -1,5 +1,7 @@
 import psycopg2
 from psycopg2 import sql
+import os
+from dotenv import load_dotenv
 
 
 class GlobalModel:
@@ -12,12 +14,14 @@ class GlobalModel:
         return cls._instance
 
     def __init__(self):
+        
+        load_dotenv()  # Loads from .env automatically
 
-        self.dbname = "defaultdb"
-        self.user = "avnadmin"
-        self.password = ""
-        self.host = "pa-pgdimitrov-bfdb.j.aivencloud.com"
-        self.port = "25464"
+        self.dbname = os.getenv("DB_NAME")
+        self.user = os.getenv("DB_USER")
+        self.password = os.getenv("DB_PASSWORD")
+        self.host = os.getenv("DB_HOST")
+        self.port = os.getenv("DB_PORT")
         self.connection = None
         self.cursor = None
 
