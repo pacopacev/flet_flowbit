@@ -36,13 +36,14 @@ class GlobalModel:
     def connect(self):
         """Establish the database connection and create a cursor."""
         try:
-            # Connect to PostgreSQL
+            # Ensure port is an integer if not None
+            port = int(self.port) if self.port is not None else None
             self.connection = psycopg2.connect(
                 dbname=self.dbname,
                 user=self.user,
                 password=self.password,
                 host=self.host,
-                port=self.port
+                port=port
             )
             self.cursor = self.connection.cursor()
             # print("Database connection established successfully!")

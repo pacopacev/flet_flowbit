@@ -1,6 +1,8 @@
 import flet as ft
 from globalModel import GlobalModel
-from auth.login import Login    
+from auth.login import Login
+from views.Profile import ProfilePage
+from auth.fetch_user_permission import FetchUserPermission
 
 class DashboardPage:
     def __init__(self, page: ft.Page):
@@ -8,96 +10,50 @@ class DashboardPage:
         self.page.padding = 0
         self.page.theme_mode = ft.ThemeMode.LIGHT
         self.sidebar_visible = True
-        self.global_model = GlobalModel()  # Create an instance of GlobalModel
-        
-        print(self.global_model.get_data('user_id'))
-        self.user_id = self.global_model.get_data('user_id')
-        self.fetch_user_permissions(self.user_id)
-        # Current user state
-        self.current_user = {
-            "id": self.user_id,
-            "username": self.global_model.get_data('username'),
-            "is_authenticated": True,
-            "permissions": self.fetch_user_permissions(self.user_id)
-        }
-        
-    def fetch_user_permissions(self, user_id):
-        permissions = []
-        conn = None
-        try:
-            conn = self.global_model.connect()
-            if not conn:
-                return []
-
-            query = """
-                SELECT id, name, icon, route
-                FROM flet_menus
-                JOIN flet_user_permissions ON flet_menus.id = flet_user_permissions.menu_id
-                WHERE flet_user_permissions.user_id = %s;
-            """
-            params = (user_id,)
-            data = self.global_model.execute_query_all(query, params)
-            for row in data:
-                permissions.append({
-                    "id": row[0],
-                    "name": row[1],
-                    "icon": row[2],
-                    "route": row[3]
-                })
-            
-        except Exception as e:
-            print(f"Error fetching user permissions: {e}")
-            return []
-        finally:
-            self.global_model.close()
-        print(f"Fetched permissions: {permissions}")
-        self.global_model.set_data('permissions', permissions)
-        return permissions
+        self.global_model = GlobalModel()
+        self.current_user = FetchUserPermission().current_user
 
     def build_appbar(self):
-        if not self.current_user["is_authenticated"]:
+        if self.current_user["is_authenticated"] == False:
             return ft.AppBar(
                 title=ft.Text("Welcome Guest"),
-                # actions=[
-                #     ft.IconButton(ft.icons.LOGIN, on_click=lambda _: login(1))  # Using user_id=1 for demo
-                # ]
             )
-        
-        # Build actions from permissions
         actions = []
         for permission in self.current_user["permissions"]:
             actions.append(
                 ft.IconButton(
                     icon=permission["icon"],
                     tooltip=permission["name"],
-                    # on_click=lambda e, route=permission["route"]: navigate_to(e, route)
+                    on_click=(lambda _, route=permission["route"]: self.page.go(route))
                 )
             )
-        
         actions.append(ft.PopupMenuButton(
-                items=[
-                    ft.PopupMenuItem(text="Item 1", checked=False,),
-                    ft.PopupMenuItem(),  # divider
-                    ft.PopupMenuItem(
-                        text="Change Theme", checked=False, on_click=self.toggle_theme
-                    ),
-                ]
-            ))
+            items=[
+                ft.PopupMenuItem(text="Item 1", checked=False,),
+                ft.PopupMenuItem(),  # divider
+                ft.PopupMenuItem(
+                    text="Change Theme", checked=False, on_click=self.toggle_theme
+                ),
+            ]
+        ))
+
         actions.append(ft.IconButton(ft.Icons.LOGOUT, tooltip="Logout", on_click=lambda _: self.logout()))
-        
-        
         return ft.AppBar(
             title=ft.Text(f"Welcome {self.current_user['username']}"),
             actions=actions
         )
 
-    def build(self):
-        self.main_content = ft.Column(
-            controls=[ft.Text("Welcome to Flowbit Dashboard!")],
-            expand=True,
-            scroll=ft.ScrollMode.AUTO,
-        )
-
+    def build(self, main_content=None):
+        if not hasattr(self, 'main_content') or self.main_content is None:
+            self.main_content = ft.Column(
+                controls=[ft.Text("Welcome to Flowbit Dashboard!")],
+                expand=True,
+                scroll=ft.ScrollMode.AUTO,
+            )
+        if main_content is not None:
+            # Replace all controls in main_content
+            self.main_content.controls.clear()
+            self.main_content.controls.append(main_content)
         horizontal_divider = ft.Divider(height=1, color=ft.Colors.BLACK12)
         return ft.Column(
             controls=[
@@ -114,20 +70,13 @@ class DashboardPage:
             expand=True,
         )
 
-    def controllerNavigation(self, e):
-        selected_index = e.control.selected_index
-        if selected_index == 0:
-            self.main_content.controls = [ft.Text("Profile Section")]
-        elif selected_index == 1:
-            self.main_content.controls = [ft.Text("Bookmarks Section")]
-        elif selected_index == 2:
-            self.main_content.controls = [ft.Text("Settings Section")]
-        elif selected_index == 3:
-            self.logout()
-        self.page.update()
+    # No route_change method; all routing is handled in main.py
 
     def logout(self):
         print("Logging out...")
+        # Clear user session data
+        GlobalModel().set_data('user_id', None)
+        GlobalModel().set_data('username', None)
         self.page.go("/login")
 
     def toggle_theme(self, e=None):
@@ -137,3 +86,7 @@ class DashboardPage:
             else ft.ThemeMode.LIGHT
         )
         self.page.update()
+        
+    
+        
+    

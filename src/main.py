@@ -2,6 +2,8 @@ import flet as ft
 from dashboard import DashboardPage
 from globalModel import GlobalModel
 from auth.login import Login
+from views.Profile import ProfilePage
+from auth.fetch_user_permission import FetchUserPermission
   # Import the second page
   # from the separate file
 global_model = GlobalModel()
@@ -124,25 +126,56 @@ def main(page: ft.Page):
     
     
 
+    dashboard = None
+    current_user = None
+
+    def set_main_content(content):
+        if dashboard:
+            # Rebuild the dashboard layout with the new main content
+            page.views[-1].controls.clear()
+            page.views[-1].controls.append(dashboard.build(content))
+            page.update()
+
     def route_change(e):
+        nonlocal dashboard, current_user
         print(f"Route change to: {e.route}")
-        page.views.clear()
-        
+        allowed_routes = ["/login", "/dashboard", "/profile"]
+        if page.route not in allowed_routes:
+            page.go("/login")
+            return
         if page.route == "/login":
+            page.views.clear()
             page.views.append(login_page(page))
-            # Enable the login button again
-            # login_button.disabled = False
-        elif page.route == "/dashboard":
-            if not any(v.route == "/dashboard" for v in page.views):
+        else:
+            fetch_user_permission = FetchUserPermission()
+            
+            current_user = fetch_user_permission.current_user
+            print(current_user)
+            print("123")
+            # If user is not authenticated, always redirect to login (including manual route entry)
+            if not current_user or not current_user.get("is_authenticated"):
+                print("[DEBUG] Not authenticated or no user. Redirecting to login.")
+                print(f"[DEBUG] current_user: {current_user}")
+                page.go("/login")
+                return
+            if dashboard is None:
                 dashboard = DashboardPage(page)
+            if not page.views or page.views[-1].route != "/dashboard":
+                page.views.clear()
                 page.views.append(
-    ft.View(
-        "/dashboard",
-        controls=[dashboard.build()],
-        appbar=dashboard.build_appbar()  # You need to expose the appbar from DashboardPage
-    )
-)
-        
+                    ft.View(
+                        "/dashboard",
+                        controls=[dashboard.build()],
+                        appbar=dashboard.build_appbar()
+                    )
+                )
+            if page.route == "/dashboard":
+                set_main_content(ft.Text("Welcome to Flowbit Dashboard!"))
+            elif page.route == "/profile":
+                print("Navigating to Profile Page")
+                profile_page = ProfilePage(page, current_user)
+                set_main_content(profile_page.main_content)
+            # Add more routes here as needed
         page.update()
 
     def view_pop(e):
