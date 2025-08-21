@@ -4,7 +4,6 @@ import re
 from datetime import datetime
 import bcrypt
 from globalModel import GlobalModel
-# from dashboard import DashBoard
 
 
 
@@ -17,16 +16,16 @@ class Login:
     def checkCredential(self):
         try:
             if not self.global_model.connect():
-                return [False, "Failed to connect to database"]
+                return [False, "Failed to connect to database!"]
 
             if not self.username or not self.password:
-                return [False, "Username and password are required"]
+                return [False, "Username and password are required!"]
 
             query = "SELECT first_name, password FROM users WHERE first_name = %s;"
             user = self.global_model.execute_query_all(query, (self.username,))
         
             if not user:
-                return [False, "User not found"]
+                return [False, "User not found!"]
 
             stored_username, stored_password_hash = user[0]
         # Your password verification logic
@@ -38,16 +37,15 @@ class Login:
                 self.get_user_id(user[0][0])
                 self.login_insert(user[0][0])
                 
-                return [True, "Login successful"]
+                return [True, "Login successful!"]
             else:
-                return [False, "Invalid password"]
+                return [False, "Invalid password!"]
 
         except Exception as e:
             return [False, f"Login error: {str(e)}"]
         finally:
             self.global_model.close()
     def get_user_id(self, username):
-        # print(username)
         try:
             # SQL query to get the user ID based on the username
             query = "SELECT id FROM users WHERE first_name = %s;"
@@ -61,9 +59,6 @@ class Login:
                 user_id = data[0][0]  # ID of the user
                 self.global_model.set_data('user_id', user_id)
                 self.global_model.set_data('username', username)# Store user ID in global model
-                # print(f"User ID for {username} is {user_id}")
-                # self.global_model.set_data('user_id', user_id)  # Store username in global model
-                # return user_id
             else:
                 print("No user found with that first name.")
         except Exception as e:
@@ -95,18 +90,9 @@ class Login:
                 columns = ['user_id', 'email', 'created_at']  # Column names in the user_log table
                 self.global_model.insert_data("user_log", log_data, columns)
 
-                # Log the success
-                # print(f"User log inserted for user id: {user_id}")
-
             else:
                 print("No user found with that first name.")
 
         except Exception as e:
             # Handle any errors that occur during the process
             print(f"Error inserting user log: {e}")
-
-    # def toggle_password_visibility(self):
-    #     if self.show_password_cb.isChecked():
-    #         self.lineEdits['Password'].setEchoMode(QLineEdit.EchoMode.Normal)
-    #     else:
-    #         self.lineEdits['Password'].setEchoMode(QLineEdit.EchoMode.Password)

@@ -1,7 +1,5 @@
 import flet as ft
 from globalModel import GlobalModel
-from auth.login import Login
-from views.Profile import ProfilePage
 from auth.fetch_user_permission import FetchUserPermission
 
 class DashboardPage:
@@ -14,11 +12,12 @@ class DashboardPage:
         self.current_user = FetchUserPermission().current_user
 
     def build_appbar(self):
-        if self.current_user["is_authenticated"] == False:
-            return ft.AppBar(
-                title=ft.Text("Welcome Guest"),
-            )
+        # if self.current_user["is_authenticated"] == False:
+        #     return ft.AppBar(
+        #         title=ft.Text("Welcome Guest"),
+        #     )
         actions = []
+
         for permission in self.current_user["permissions"]:
             actions.append(
                 ft.IconButton(
@@ -36,10 +35,22 @@ class DashboardPage:
                 ),
             ]
         ))
+        
 
         actions.append(ft.IconButton(ft.Icons.LOGOUT, tooltip="Logout", on_click=lambda _: self.logout()))
+        
         return ft.AppBar(
-            title=ft.Text(f"Welcome {self.current_user['username']}"),
+            leading=ft.Container(
+                content=ft.ElevatedButton(
+                    "Go Back", icon=ft.Icons.ARROW_BACK, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
+                    on_click=lambda _: self.page.go(self.page.views[-1].route)
+                ),
+                margin=ft.margin.only(left=10, top=10, bottom=10)
+            ),
+            leading_width=130,
+            title=ft.Text(f"Welcome {self.current_user['username']}", weight=ft.FontWeight.W_900, ),
+            center_title=False,
+            bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
             actions=actions
         )
 
@@ -54,10 +65,9 @@ class DashboardPage:
             # Replace all controls in main_content
             self.main_content.controls.clear()
             self.main_content.controls.append(main_content)
-        horizontal_divider = ft.Divider(height=1, color=ft.Colors.BLACK12)
+        
         return ft.Column(
             controls=[
-                horizontal_divider,
                 ft.Row(
                     controls=[
                         # rail if self.sidebar_visible else ft.Container(width=0),

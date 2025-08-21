@@ -3,7 +3,6 @@ from globalModel import GlobalModel
 class FetchUserPermission:
     def __init__(self):
         self.global_model = GlobalModel()
-        print(self.global_model.get_data('user_id'))
         self.user_id = self.global_model.get_data('user_id')
         self.username = self.global_model.get_data('username')
         permissions = self.fetch_user_permissions(self.user_id)
@@ -46,7 +45,6 @@ class FetchUserPermission:
             return []
         finally:
             self.global_model.close()
-        # print(f"Fetched permissions: {permissions}")
         self.global_model.set_data('permissions', permissions)
         return permissions
         
