@@ -3,6 +3,7 @@ from dashboard import DashboardPage
 from globalModel import GlobalModel
 from auth.login import Login
 from views.Profile import ProfilePage
+from views.admin import Admin
 from auth.fetch_user_permission import FetchUserPermission
 from routes.allowed_routes import allowed_routes
 from DialogMsg import DialogMsg
@@ -150,11 +151,19 @@ def main(page: ft.Page):
                     )
                 )
             if page.route == "/dashboard":
-                set_main_content(ft.Text("Welcome to Flowbit Dashboard!"))
+                dash_content = ft.Container(
+                content=ft.Image(src="images/flowbit_big.png"),
+                alignment=ft.alignment.center  
+                ),
+                set_main_content(dash_content)
             elif page.route == "/profile":
                 print("Navigating to Profile Page")
                 profile_page = ProfilePage(page, current_user)
                 set_main_content(profile_page.main_content)
+            elif page.route =="/admin":
+                print("Navigating to Admin Page")
+                admin_page = Admin(page, current_user)
+                set_main_content(admin_page.main_content)
             # Add more routes here as needed
         page.update()
 

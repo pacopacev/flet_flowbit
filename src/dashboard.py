@@ -12,10 +12,6 @@ class DashboardPage:
         self.current_user = FetchUserPermission().current_user
 
     def build_appbar(self):
-        # if self.current_user["is_authenticated"] == False:
-        #     return ft.AppBar(
-        #         title=ft.Text("Welcome Guest"),
-        #     )
         actions = []
 
         for permission in self.current_user["permissions"]:
@@ -42,16 +38,25 @@ class DashboardPage:
         return ft.AppBar(
             leading=ft.Container(
                 content=ft.ElevatedButton(
-                    "Go Back", icon=ft.Icons.ARROW_BACK, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
+                    "Dashboard", icon=ft.Icons.ARROW_BACK, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
                     on_click=lambda _: self.page.go(self.page.views[-1].route)
                 ),
                 margin=ft.margin.only(left=10, top=10, bottom=10)
             ),
             leading_width=130,
-            title=ft.Text(f"Welcome {self.current_user['username']}", weight=ft.FontWeight.W_900, ),
-            center_title=False,
+            title=ft.Row(
+                controls=[
+                    ft.Text("Welcome", ),
+                    ft.Text(f"{self.current_user['username']}", weight=ft.FontWeight.W_900, )
+                ],
+                
+            ),
+            # title=ft.Text(f"Welcome {self.current_user['username']}", weight=ft.FontWeight.W_900, ),
+            # center_title=False,
             bgcolor=ft.Colors.SURFACE_CONTAINER_HIGHEST,
-            actions=actions
+            actions=actions,
+            
+            
         )
 
     def build(self, main_content=None):
@@ -70,8 +75,6 @@ class DashboardPage:
             controls=[
                 ft.Row(
                     controls=[
-                        # rail if self.sidebar_visible else ft.Container(width=0),
-                        # ft.VerticalDivider(width=1),
                         self.main_content,
                     ],
                     expand=True,

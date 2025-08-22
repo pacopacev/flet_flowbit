@@ -1,4 +1,4 @@
 
 
 
-allowed_routes = ["/login", "/dashboard", "/profile"]
+allowed_routes = ["/login", "/dashboard", "/profile","/admin"]

@@ -1,10 +1,8 @@
 import flet as ft
 from globalModel import GlobalModel
 
-
-class ProfilePage:    
+class Admin:
     def __init__(self, page: ft.Page, current_user):
-        print(current_user)
         self.page = page
         self.page.padding = 0
         self.page.theme_mode = ft.ThemeMode.LIGHT
@@ -12,7 +10,7 @@ class ProfilePage:
         self.global_model = GlobalModel()
         self.current_user = current_user
         self.main_content = ft.Column(
-            controls=[ft.Text("Welcome to Flowbit Profile!")],
+            controls=[ft.Text("Welcome to Flowbit Admin!")],
             expand=True,
             scroll=ft.ScrollMode.AUTO,
             alignment=ft.MainAxisAlignment.CENTER
