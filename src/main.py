@@ -154,7 +154,7 @@ def main(page: ft.Page):
                 dash_content = ft.Container(
                 content=ft.Image(src="images/flowbit_big.png"),
                 alignment=ft.alignment.center  
-                ),
+                )
                 set_main_content(dash_content)
             elif page.route == "/profile":
                 print("Navigating to Profile Page")

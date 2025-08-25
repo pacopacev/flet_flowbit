@@ -71,17 +71,7 @@ class DashboardPage:
             self.main_content.controls.clear()
             self.main_content.controls.append(main_content)
         
-        return ft.Column(
-            controls=[
-                ft.Row(
-                    controls=[
-                        self.main_content,
-                    ],
-                    expand=True,
-                )
-            ],
-            expand=True,
-        )
+        return self.main_content
 
     # No route_change method; all routing is handled in main.py
 

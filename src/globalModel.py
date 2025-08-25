@@ -60,9 +60,8 @@ class GlobalModel:
         print("Database connection closed.")
 
     def execute_query_all(self, query, params=None):
-        #print(query)
-        #print(params)
-        """Execute a query and commit the changes."""
+        if self.connection is None:
+            self.connect()  # assuming this method establishes the database connection
 
         try:
             self.cursor.execute(query, params)
