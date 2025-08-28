@@ -59,7 +59,7 @@ class GlobalModel:
             self.connection.close()
         print("Database connection closed.")
 
-    def execute_query_all(self, query, params=None):
+    async def execute_query_all(self, query, params=None):
         if self.connection is None:
             self.connect()  # assuming this method establishes the database connection
 

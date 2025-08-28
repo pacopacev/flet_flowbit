@@ -75,7 +75,7 @@ class DashboardPage:
 
     # No route_change method; all routing is handled in main.py
 
-    def logout(self):
+    async def logout(self):
         print("Logging out...")
         # Clear user session data
         GlobalModel().set_data('user_id', None)

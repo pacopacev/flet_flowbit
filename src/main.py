@@ -8,6 +8,8 @@ from auth.fetch_user_permission import FetchUserPermission
 from routes.allowed_routes import allowed_routes
 from DialogMsg import DialogMsg
 global_model = GlobalModel()
+
+
 def connect_to_database():
         """Connect to the database and return the connection."""
         try:
@@ -103,7 +105,7 @@ current_user = {
     "permissions": []
 }    
 
-def main(page: ft.Page):
+async def main(page: ft.Page):
     # Page configuration
     page.window_full_screen = True
     page.title = "FLowbit"
@@ -117,14 +119,14 @@ def main(page: ft.Page):
     dashboard = None
     current_user = None
 
-    def set_main_content(content):
+    async def set_main_content(content):
         if dashboard:
             # Rebuild the dashboard layout with the new main content
             page.views[-1].controls.clear()
             page.views[-1].controls.append(dashboard.build(content))
             page.update()
 
-    def route_change(e):
+    async def route_change(e):
         nonlocal dashboard, current_user
         print(f"Route change to: {e.route}")
         if page.route not in allowed_routes:
@@ -155,19 +157,19 @@ def main(page: ft.Page):
                 content=ft.Image(src="images/flowbit_big.png"),
                 alignment=ft.alignment.center  
                 )
-                set_main_content(dash_content)
+                await set_main_content(dash_content)
             elif page.route == "/profile":
                 print("Navigating to Profile Page")
                 profile_page = ProfilePage(page, current_user)
-                set_main_content(profile_page.main_content)
+                await set_main_content(profile_page.main_content)
             elif page.route =="/admin":
                 print("Navigating to Admin Page")
                 admin_page = Admin(page, current_user)
-                set_main_content(admin_page.main_content)
+                await set_main_content(admin_page.main_content)
             # Add more routes here as needed
         page.update()
 
-    def view_pop(e):
+    async def view_pop(e):
         print(f"View pop: {e.view.route}")
         page.views.pop()
         top_view = page.views[-1]

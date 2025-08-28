@@ -52,10 +52,10 @@ class Admin:
         
 
 
-    def build(self):
+    async def build(self):
         return self.main_content
     
-    def get_users(self):
+    async def get_users(self):
 
         query = "SELECT * FROM users;"
 
