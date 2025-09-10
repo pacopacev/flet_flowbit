@@ -29,7 +29,7 @@ class Admin:
                 
             ],
         )
-        self.users = self.get_users()
+        # self.users = self.get_users()
         
         
         self.add_user_button = ft.ElevatedButton(
@@ -39,24 +39,21 @@ class Admin:
                          on_click=lambda _: print("add user"),
                         
                      )
-        horizontal_devider = ft.Divider()
+        
         
         
        
         
         self.main_content = ft.Column(
-            controls=[self.add_user_button, horizontal_devider, self.table],
+            #controls=[self.add_user_button, horizontal_devider, self.table],
+            controls=[self.add_user_button, self.table],
             expand=True,
             alignment=ft.MainAxisAlignment.CENTER
         )
         
 
 
-    async def build(self):
-        return self.main_content
-    
-    async def get_users(self):
-
+    def build(self):
         query = "SELECT * FROM users;"
 
         data = self.global_model.execute_query_all(query, params=None)
@@ -66,6 +63,18 @@ class Admin:
             ft.DataCell(ft.Text(row[1])),  # First name
             ft.DataCell(ft.Text(row[2])),  # Email
         ]))
+        horizontal_devider = ft.Divider()  
+        self.main_content = ft.Column(
+            controls=[self.add_user_button, horizontal_devider, self.table],
+            expand=True,
+            alignment=ft.MainAxisAlignment.CENTER
+        )
+        return self.main_content
+    
+    def get_users(self):
+        pass
+
+        
         # return data
         
     

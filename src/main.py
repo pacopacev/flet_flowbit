@@ -105,9 +105,10 @@ current_user = {
     "permissions": []
 }    
 
-async def main(page: ft.Page):
+def main(page: ft.Page):
     # Page configuration
     page.window_full_screen = True
+    page.favicon = "assets\favicon.png"
     page.title = "FLowbit"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.padding = 0
@@ -119,14 +120,14 @@ async def main(page: ft.Page):
     dashboard = None
     current_user = None
 
-    async def set_main_content(content):
+    def set_main_content(content):
         if dashboard:
             # Rebuild the dashboard layout with the new main content
             page.views[-1].controls.clear()
             page.views[-1].controls.append(dashboard.build(content))
             page.update()
 
-    async def route_change(e):
+    def route_change(e):
         nonlocal dashboard, current_user
         print(f"Route change to: {e.route}")
         if page.route not in allowed_routes:
@@ -157,15 +158,15 @@ async def main(page: ft.Page):
                 content=ft.Image(src="images/flowbit_big.png"),
                 alignment=ft.alignment.center  
                 )
-                await set_main_content(dash_content)
+                set_main_content(dash_content)
             elif page.route == "/profile":
                 print("Navigating to Profile Page")
                 profile_page = ProfilePage(page, current_user)
-                await set_main_content(profile_page.main_content)
+                set_main_content(profile_page.main_content)
             elif page.route =="/admin":
                 print("Navigating to Admin Page")
                 admin_page = Admin(page, current_user)
-                await set_main_content(admin_page.main_content)
+                set_main_content(admin_page.main_content)
             # Add more routes here as needed
         page.update()
 
